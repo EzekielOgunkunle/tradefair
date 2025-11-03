@@ -1,0 +1,263 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  clerkId       String    @unique
+  displayName   String
+  email         String    @unique
+  avatarUrl     String?
+  role          UserRole  @default(BUYER)
+  roleAssigned  Boolean   @default(false)
+  vendorId      String?   @unique
+  createdAt     DateTime  @default(now())
+  
+  // Relations
+  vendor        Vendor?   @relation("UserVendor")
+  orders        Order[]
+  reviews       Review[]
+  subscriptions Subscription[]
+  notifications Notification[]
+  
+  @@index([clerkId])
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Vendor {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  businessName          String
+  businessAddress       String
+  businessDescription   String?
+  phoneNumber           String?
+  contactEmail          String?
+  rating                Float    @default(5.0)
+  kycDocuments          String[] // S3 URLs as array
+  bankName              String
+  accountNumber         String
+  accountName           String
+  routingNumber         String?
+  paystackRecipientCode String?
+  status                VendorStatus @default(PENDING)
+  rejectionReason       String?
+  plan                  VendorPlan   @default(FREE)
+  subscriptionId        String?
+  createdAt             DateTime @default(now())
+  approvedAt            DateTime?
+  rejectedAt            DateTime?
+  
+  // Relations
+  user          User     @relation("UserVendor", fields: [userId], references: [id], onDelete: Cascade)
+  listings      Listing[]
+  orders        Order[]
+  platformRevenue PlatformRevenue[]
+  subscriptions Subscription[]
+  
+  @@index([userId])
+  @@index([status])
+  @@map("vendors")
+}
+
+
+model Listing {
+  id          String   @id @default(cuid())
+  vendorId    String
+  title       String
+  description String   @db.Text
+  priceCents  Int
+  currency    String   @default("NGN")
+  images      String[] // S3 URLs as array
+  inventory   Int
+  aiTags      String[]
+  categories  String[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  vendor      Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+  reviews     Review[]
+  
+  @@index([vendorId])
+  @@index([isActive])
+  @@index([categories])
+  @@map("listings")
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  buyerId           String
+  vendorId          String
+  totalAmountCents  Int
+  currency          String      @default("NGN")
+  status            OrderStatus @default(PENDING)
+  paystackReference String?     @unique
+  paymentMethod     String?
+  street            String
+  city              String
+  state             String
+  postalCode        String
+  country           String      @default("Nigeria")
+  trackingNumber    String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  
+  // Relations
+  buyer         User    @relation(fields: [buyerId], references: [id])
+  vendor        Vendor  @relation(fields: [vendorId], references: [id])
+  items         OrderItem[]
+  platformRevenue PlatformRevenue[]
+  reviews       Review[]
+  
+  @@index([buyerId])
+  @@index([vendorId])
+  @@index([status])
+  @@index([paystackReference])
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String  @id @default(cuid())
+  orderId    String
+  listingId  String
+  quantity   Int
+  priceCents Int
+  title      String
+  
+  // Relations
+  order      Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  listing    Listing @relation(fields: [listingId], references: [id])
+  
+  @@index([orderId])
+  @@index([listingId])
+  @@map("order_items")
+}
+
+model PlatformRevenue {
+  id                String   @id @default(cuid())
+  orderId           String
+  vendorId          String
+  totalAmountCents  Int
+  platformFeeCents  Int
+  vendorAmountCents Int
+  commissionRate    Float    @default(0.05) // 5%
+  currency          String   @default("NGN")
+  paystackReference String
+  createdAt         DateTime @default(now())
+  
+  // Relations
+  order      Order  @relation(fields: [orderId], references: [id])
+  vendor     Vendor @relation(fields: [vendorId], references: [id])
+  
+  @@index([orderId])
+  @@index([vendorId])
+  @@map("platform_revenue")
+}
+
+model Review {
+  id                 String   @id @default(cuid())
+  listingId          String
+  userId             String
+  orderId            String
+  rating             Int      // 1-5
+  comment            String   @db.Text
+  isVerifiedPurchase Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  
+  // Relations
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id])
+  
+  @@index([listingId])
+  @@index([userId])
+  @@index([orderId])
+  @@map("reviews")
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String
+  vendorId             String?
+  plan                 String             // "free", "vendor_pro", "buyer_premium"
+  status               SubscriptionStatus @default(ACTIVE)
+  clerkSubscriptionId  String             @unique
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  
+  // Relations
+  user   User    @relation(fields: [userId], references: [id])
+  vendor Vendor? @relation(fields: [vendorId], references: [id])
+  
+  @@index([userId])
+  @@index([vendorId])
+  @@index([clerkSubscriptionId])
+  @@map("subscriptions")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // "order_update", "vendor_approved", "payment_received", etc.
+  title     String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  metadata  Json?    // Additional data (order ID, etc.)
+  createdAt DateTime @default(now())
+  readAt    DateTime?
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  BUYER
+  VENDOR
+}
+
+enum VendorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum VendorPlan {
+  FREE
+  VENDOR_PRO
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+}
