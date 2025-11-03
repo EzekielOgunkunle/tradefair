@@ -177,18 +177,40 @@ model Review {
   orderId            String
   rating             Int      // 1-5
   comment            String   @db.Text
+  images             String[] // Photo URLs
   isVerifiedPurchase Boolean  @default(false)
+  helpfulCount       Int      @default(0)
+  vendorResponse     String?  @db.Text
+  vendorRespondedAt  DateTime?
   createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
   
   // Relations
-  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  user      User    @relation(fields: [userId], references: [id])
-  order     Order   @relation(fields: [orderId], references: [id])
+  listing      Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user         User    @relation(fields: [userId], references: [id])
+  order        Order   @relation(fields: [orderId], references: [id])
+  helpfulVotes ReviewHelpful[]
   
   @@index([listingId])
   @@index([userId])
   @@index([orderId])
+  @@index([rating])
   @@map("reviews")
+}
+
+model ReviewHelpful {
+  id        String   @id @default(cuid())
+  reviewId  String
+  userId    String
+  createdAt DateTime @default(now())
+  
+  // Relations
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+  @@index([userId])
+  @@map("review_helpful")
 }
 
 model Subscription {

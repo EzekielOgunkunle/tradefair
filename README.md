@@ -22,9 +22,7 @@ A modern, full-featured e-commerce platform connecting African buyers with verif
 - ✅ **Admin Panel - Vendor Approval** - Vendor application review, approval/rejection workflow, notifications
 - ✅ **Admin Panel - Analytics** - Comprehensive dashboard with platform metrics, charts, vendor performance, revenue tracking
 - ✅ **User Profile & Settings** - Profile overview with stats, order history, saved addresses management, account settings
-
-### In Progress
-- 🔄 Reviews & Ratings System
+- ✅ **Reviews & Ratings System** - Product reviews with star ratings, helpful votes, vendor responses, pagination, sorting
 
 ## 🚀 Tech Stack
 
