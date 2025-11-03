@@ -2,17 +2,34 @@
 
 import { useEffect, useState } from 'react'
 import { useUser } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Package, Loader2, ShoppingBag, Clock, CheckCircle2, XCircle, Truck } from 'lucide-react'
+import { Package, Loader2, ShoppingBag, Clock, CheckCircle2, XCircle, Truck, Eye, XOctagon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { showError } from '@/lib/toast-utils'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { showSuccess, showError } from '@/lib/toast-utils'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export default function OrdersPage() {
   const { user, isLoaded } = useUser()
+  const router = useRouter()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+  const [selectedOrder, setSelectedOrder] = useState(null)
+  const [cancellationReason, setCancellationReason] = useState('')
+  const [cancelling, setCancelling] = useState(false)
 
   useEffect(() => {
     if (isLoaded && user) {
@@ -36,6 +53,46 @@ export default function OrdersPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleCancelOrder = async () => {
+    if (!selectedOrder || !cancellationReason.trim()) {
+      showError('Please provide a cancellation reason')
+      return
+    }
+
+    setCancelling(true)
+    try {
+      const response = await fetch('/api/orders/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: selectedOrder.id,
+          reason: cancellationReason
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to cancel order')
+      }
+
+      showSuccess('Order cancelled successfully')
+      setCancelDialogOpen(false)
+      setCancellationReason('')
+      setSelectedOrder(null)
+      fetchOrders() // Refresh orders
+    } catch (error) {
+      console.error('Failed to cancel order:', error)
+      showError(error.message)
+    } finally {
+      setCancelling(false)
+    }
+  }
+
+  const canCancelOrder = (order) => {
+    return ['PENDING', 'PAID', 'PROCESSING'].includes(order.status)
   }
 
   const getStatusIcon = (status) => {
@@ -201,12 +258,87 @@ export default function OrdersPage() {
                       {order.street}, {order.city}, {order.state} {order.postalCode}
                     </p>
                   </div>
+
+                  {/* Action Buttons */}
+                  <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 flex gap-3 flex-wrap">
+                    <Button
+                      onClick={() => router.push(`/orders/${order.id}`)}
+                      variant="outline"
+                      className="flex-1 md:flex-none"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      View Details
+                    </Button>
+                    {canCancelOrder(order) && (
+                      <Button
+                        onClick={() => {
+                          setSelectedOrder(order)
+                          setCancelDialogOpen(true)
+                        }}
+                        variant="destructive"
+                        className="flex-1 md:flex-none"
+                      >
+                        <XOctagon className="w-4 h-4 mr-2" />
+                        Cancel Order
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Cancel Order Dialog */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Order</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel this order? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="reason">Reason for cancellation</Label>
+              <Textarea
+                id="reason"
+                placeholder="Please tell us why you're cancelling this order..."
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCancelDialogOpen(false)
+                setCancellationReason('')
+              }}
+              disabled={cancelling}
+            >
+              Keep Order
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancelOrder}
+              disabled={cancelling || !cancellationReason.trim()}
+            >
+              {cancelling ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Cancelling...
+                </>
+              ) : (
+                'Cancel Order'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

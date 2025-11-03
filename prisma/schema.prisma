@@ -113,6 +113,7 @@ model Order {
   postalCode        String
   country           String      @default("Nigeria")
   trackingNumber    String?
+  cancellationReason String?    @db.Text
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
   
@@ -230,6 +231,25 @@ model Notification {
   @@map("notifications")
 }
 
+model RefundRequest {
+  id          String        @id @default(cuid())
+  orderId     String
+  userId      String
+  reason      String        @db.Text
+  amount      Int           // Amount in cents
+  bankDetails String?       // JSON string with bank details
+  status      RefundStatus  @default(PENDING)
+  processedBy String?       // Admin user ID who processed the refund
+  processedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  @@index([orderId])
+  @@index([userId])
+  @@index([status])
+  @@map("refund_requests")
+}
+
 // Enums
 enum UserRole {
   ADMIN
@@ -263,3 +283,11 @@ enum SubscriptionStatus {
   CANCELLED
   PAST_DUE
 }
+
+enum RefundStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PROCESSED
+}
+
