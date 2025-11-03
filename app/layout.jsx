@@ -1,4 +1,5 @@
 import { Outfit } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import StoreProvider from "@/app/StoreProvider";
 import "./globals.css";
@@ -12,13 +13,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="en">
-            <body className={`${outfit.className} antialiased`}>
-                <StoreProvider>
-                    <Toaster richColors position="bottom-right" />
-                    {children}
-                </StoreProvider>
-            </body>
-        </html>
+        <ClerkProvider>
+            <html lang="en">
+                <body className={`${outfit.className} antialiased`}>
+                    <StoreProvider>
+                        <Toaster richColors position="bottom-right" />
+                        {children}
+                    </StoreProvider>
+                </body>
+            </html>
+        </ClerkProvider>
     );
 }
