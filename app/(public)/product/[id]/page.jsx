@@ -6,6 +6,7 @@ import VendorCard from '@/components/products/VendorCard'
 import ProductReviews from '@/components/products/ProductReviews'
 import RelatedProducts from '@/components/products/RelatedProducts'
 import Breadcrumbs from '@/components/products/Breadcrumbs'
+import ActivityTracker from '@/components/ActivityTracker'
 
 export async function generateMetadata({ params }) {
   const product = await prisma.listing.findUnique({
@@ -114,6 +115,9 @@ export default async function ProductDetailPage({ params }) {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-gray-900">
+      {/* Track product view */}
+      <ActivityTracker listingId={product.id} activityType="VIEW_PRODUCT" />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumbs */}
         <Breadcrumbs
