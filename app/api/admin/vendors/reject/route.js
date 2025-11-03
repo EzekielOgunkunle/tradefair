@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { sendVendorApprovalEmail } from "@/lib/email";
 
 export async function POST(request) {
   try {
@@ -88,6 +89,14 @@ export async function POST(request) {
         },
       },
     });
+
+    // Send rejection email
+    try {
+      await sendVendorApprovalEmail(updatedVendor, vendor.user, false);
+    } catch (emailError) {
+      console.error('Failed to send vendor rejection email:', emailError);
+      // Don't fail the rejection if email fails
+    }
 
     return NextResponse.json({
       success: true,

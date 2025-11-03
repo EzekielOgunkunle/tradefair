@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendOrderConfirmationEmail, sendOrderStatusEmail, sendNewOrderNotificationToVendor } from '@/lib/email'
 
 export async function POST(request) {
   try {
@@ -57,6 +58,20 @@ export async function POST(request) {
           }
         })
 
+        // Get full order details with relations for emails
+        const fullOrder = await prisma.order.findUnique({
+          where: { id: order.id },
+          include: {
+            buyer: true,
+            items: {
+              include: {
+                listing: true
+              }
+            },
+            shippingAddress: true
+          }
+        })
+
         // Create notification for buyer
         const buyerUser = await prisma.user.findUnique({
           where: { id: order.buyerId }
@@ -75,6 +90,14 @@ export async function POST(request) {
               }
             }
           })
+
+          // Send order confirmation email
+          try {
+            await sendOrderConfirmationEmail(fullOrder, buyerUser)
+          } catch (emailError) {
+            console.error('Failed to send order confirmation email:', emailError)
+            // Don't fail the order if email fails
+          }
         }
 
         // Create notification for vendor
@@ -96,6 +119,14 @@ export async function POST(request) {
               }
             }
           })
+
+          // Send new order email to vendor
+          try {
+            await sendNewOrderNotificationToVendor(fullOrder, vendor, vendor.user)
+          } catch (emailError) {
+            console.error('Failed to send vendor notification email:', emailError)
+            // Don't fail the order if email fails
+          }
         }
       }
     }

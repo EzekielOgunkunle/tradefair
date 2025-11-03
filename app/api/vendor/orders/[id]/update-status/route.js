@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { sendOrderStatusEmail } from '@/lib/email'
 
 export async function PATCH(request, { params }) {
   try {
@@ -75,7 +76,16 @@ export async function PATCH(request, { params }) {
 
     const updatedOrder = await prisma.order.update({
       where: { id },
-      data: updateData
+      data: updateData,
+      include: {
+        buyer: true,
+        items: {
+          include: {
+            listing: true
+          }
+        },
+        shippingAddress: true
+      }
     })
 
     // Create notification for buyer
@@ -87,6 +97,16 @@ export async function PATCH(request, { params }) {
         type: 'ORDER_UPDATE'
       }
     })
+
+    // Send email for status changes
+    if (['SHIPPED', 'DELIVERED'].includes(status)) {
+      try {
+        await sendOrderStatusEmail(updatedOrder, order.buyer, status);
+      } catch (emailError) {
+        console.error('Failed to send order status email:', emailError);
+        // Don't fail the status update if email fails
+      }
+    }
 
     return NextResponse.json({
       success: true,
