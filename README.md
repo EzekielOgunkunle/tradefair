@@ -18,9 +18,10 @@ A modern, full-featured e-commerce platform connecting African buyers with verif
 - ✅ **Checkout & Payment** - Complete checkout flow with Paystack integration, order creation, payment verification
 - ✅ **Order Management** - Order detail pages, order tracking, order cancellation, refund requests
 - ✅ **Vendor Dashboard - Products** - Product management with add/edit/delete, inventory tracking, status toggle
+- ✅ **Vendor Dashboard - Orders** - Order management, status updates, revenue tracking, customer details
 
 ### In Progress
-- 🔄 Vendor Dashboard - Orders
+- 🔄 Admin Panel
 - 🔄 Admin Panel
 
 ## 🚀 Tech Stack
@@ -113,7 +114,7 @@ The seed script creates:
   - **Lagos Tech Gadgets** - Electronics
 ## 🎯 Roadmap
 
-### Phase 1 (Current - 45% Complete)
+### Phase 1 (Current - 50% Complete)
 - [x] UI/UX Design System
 - [x] Database Schema
 - [x] Basic Navigation
@@ -123,6 +124,7 @@ The seed script creates:
 - [x] Checkout Flow (Paystack payment integration)
 - [x] Order Management System
 - [x] Vendor Product Management
+- [x] Vendor Order Management
 
 ### Phase 2
 - [ ] Payment Integration (Paystack)
