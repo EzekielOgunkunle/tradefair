@@ -15,9 +15,10 @@ A modern, full-featured e-commerce platform connecting African buyers with verif
 - ✅ **Product Listing Pages** - Advanced filters, search, sorting, pagination
 - ✅ **Product Detail Pages** - Image galleries, zoom modal, vendor cards, reviews
 - ✅ **Shopping Cart** - Full cart with localStorage persistence, quantity management, beautiful UI
+- ✅ **Checkout & Payment** - Complete checkout flow with Paystack integration, order creation, payment verification
 
 ### In Progress
-- 🔄 Checkout Flow & Payment Integration
+- 🔄 Order Management & Tracking
 - 🔄 Vendor Dashboard
 - 🔄 Admin Panel
 
@@ -80,6 +81,9 @@ See [design-tokens.md](design-tokens.md) for complete guidelines.
 - `/products` - Product listings with filters, search, and sorting
 - `/product/[id]` - Product detail pages with image galleries and reviews
 - `/cart` - Shopping cart with order summary and delivery estimation
+- `/checkout` - Checkout page with shipping address form and Paystack payment
+- `/payment/callback` - Payment verification and order confirmation
+- `/orders` - Order history and tracking for buyers
 - `/sign-in` & `/sign-up` - Authentication pages
 - `/pending` - Vendor pending approval page
 - `/store` - Vendor dashboard (coming soon)
@@ -107,14 +111,15 @@ The seed script creates:
   - **Lagos Tech Gadgets** - Electronics
 ## 🎯 Roadmap
 
-### Phase 1 (Current - 30% Complete)
+### Phase 1 (Current - 35% Complete)
 - [x] UI/UX Design System
 - [x] Database Schema
 - [x] Basic Navigation
 - [x] Authentication (Clerk with middleware, webhooks)
 - [x] Product Display (Listing + Detail pages)
 - [x] Shopping Cart (localStorage, quantity management)
-- [ ] Checkout Flow
+- [x] Checkout Flow (Paystack payment integration)
+- [ ] Order Management System
 
 ### Phase 2
 - [ ] Payment Integration (Paystack)
