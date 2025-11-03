@@ -140,11 +140,10 @@ MIT License - see LICENSE file for details
 
 **Ezekiel Ogunkunle**
 - GitHub: [@EzekielOgunkunle](https://github.com/EzekielOgunkunle)
-- Email: ezekiel.ogunkunle@yahoo.com
 
 ## 🙏 Acknowledgments
 
-- Base template inspired by GoCart
+- Base template inspired by [GoCart](https://github.com/GreatStackDev/gocart)
 - UI components from shadcn/ui
 - Icons from Lucide React
 - Images from Unsplash
