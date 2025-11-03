@@ -7,27 +7,17 @@ import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useDispatch } from 'react-redux'
+import { addToCart } from '@/lib/features/cart/cartSlice'
 import { notifyAddedToCart } from '@/lib/toast-utils'
 
 /**
  * Animated Product Card Component
  * Features hover animations, scale effects, and interactive elements
- * 
- * @param {Object} product - Product data
- * @param {string} product.id - Product ID
- * @param {string} product.name - Product name
- * @param {string} product.image - Product image URL
- * @param {number} product.price - Product price
- * @param {number} product.originalPrice - Original price (if on sale)
- * @param {string} product.vendor - Vendor name
- * @param {number} product.rating - Product rating (0-5)
- * @param {boolean} product.featured - Is featured product
+ */
 const AnimatedProductCard = ({ product }) => {
     const [isHovered, setIsHovered] = React.useState(false)
     const dispatch = useDispatch()
-    const currency = '₦' // Nigerian Naira
-    const [isHovered, setIsHovered] = React.useState(false)
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₦'
 
     // Calculate discount percentage
     const discount = product.originalPrice 
@@ -79,6 +69,7 @@ const AnimatedProductCard = ({ product }) => {
             }
         }
     }
+    
     const buttonVariants = {
         initial: { opacity: 0, y: 10 },
         hover: { opacity: 1, y: 0 }
@@ -90,14 +81,20 @@ const AnimatedProductCard = ({ product }) => {
         
         if (!product.inStock) return
 
-        // Dispatch to Redux cart
-        // dispatch(addToCart({ id: product.id, name: product.name, price: product.price, image: product.image }))
+        // Dispatch to Redux cart with product details
+        dispatch(addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            vendor: product.vendor || 'Unknown Vendor',
+            maxQuantity: 99
+        }))
         
         // Show toast notification
         notifyAddedToCart(product.name)
     }
 
-    return (
     return (
         <motion.div
             variants={cardVariants}
@@ -208,6 +205,22 @@ const AnimatedProductCard = ({ product }) => {
                         <span className="text-xs text-slate-600">({product.rating})</span>
                     </div>
                 )}
+
+                {/* Price and Actions */}
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex-1">
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-xl font-bold text-emerald-600">
+                                {currency}{product.price?.toLocaleString()}
+                            </span>
+                            {product.originalPrice && (
+                                <span className="text-sm text-slate-400 line-through">
+                                    {currency}{product.originalPrice?.toLocaleString()}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Add to Cart Button */}
                     <motion.div
                         whileHover={{ scale: 1.05 }}
@@ -216,20 +229,6 @@ const AnimatedProductCard = ({ product }) => {
                         <Button
                             size="icon"
                             onClick={handleAddToCart}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-emerald-200"
-                            disabled={!product.inStock}
-                            aria-label="Add to cart"
-                        >
-                            <ShoppingCart className="w-4 h-4" />
-                        </Button>
-                    </motion.div>
-                    {/* Add to Cart Button */}
-                    <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                    >
-                        <Button
-                            size="icon"
                             className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-emerald-200"
                             disabled={!product.inStock}
                             aria-label="Add to cart"

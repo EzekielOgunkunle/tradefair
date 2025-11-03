@@ -1,14 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Heart, Share2, Package, Shield, TruckIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { addToCart } from '@/lib/features/cart/cartSlice'
 import { notifyAddedToCart } from '@/lib/toast-utils'
 import { useRouter } from 'next/navigation'
 
 export default function ProductInfo({ product }) {
+  const dispatch = useDispatch()
   const router = useRouter()
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
@@ -18,7 +21,14 @@ export default function ProductInfo({ product }) {
 
   const handleAddToCart = () => {
     if (!inStock) return
-    // TODO: Dispatch to Redux cart
+    dispatch(addToCart({
+      id: product.id,
+      name: product.title,
+      price: price,
+      image: product.images?.[0] || '/placeholder.png',
+      vendor: product.vendor?.name || 'Unknown Vendor',
+      maxQuantity: product.inventory
+    }))
     notifyAddedToCart(product.title, quantity)
   }
 

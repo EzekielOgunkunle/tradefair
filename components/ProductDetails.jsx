@@ -13,7 +13,7 @@ const ProductDetails = ({ product }) => {
     const productId = product.id;
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$';
 
-    const cart = useSelector(state => state.cart.cartItems);
+    const cart = useSelector(state => state.cart);
     const dispatch = useDispatch();
 
     const router = useRouter()
@@ -21,8 +21,17 @@ const ProductDetails = ({ product }) => {
     const [mainImage, setMainImage] = useState(product.images[0]);
 
     const addToCartHandler = () => {
-        dispatch(addToCart({ productId }))
+        dispatch(addToCart({
+            id: productId,
+            name: product.name,
+            price: product.price,
+            image: product.images[0],
+            vendor: 'Unknown Vendor', // Add vendor field if available in your product data
+            maxQuantity: 99
+        }))
     }
+
+    const isInCart = cart.items?.some(item => item.id === productId);
 
     const averageRating = product.rating.reduce((acc, item) => acc + item.rating, 0) / product.rating.length;
     
@@ -58,15 +67,15 @@ const ProductDetails = ({ product }) => {
                 </div>
                 <div className="flex items-end gap-5 mt-10">
                     {
-                        cart[productId] && (
+                        isInCart && (
                             <div className="flex flex-col gap-3">
                                 <p className="text-lg text-slate-800 font-semibold">Quantity</p>
                                 <Counter productId={productId} />
                             </div>
                         )
                     }
-                    <button onClick={() => !cart[productId] ? addToCartHandler() : router.push('/cart')} className="bg-slate-800 text-white px-10 py-3 text-sm font-medium rounded hover:bg-slate-900 active:scale-95 transition">
-                        {!cart[productId] ? 'Add to Cart' : 'View Cart'}
+                    <button onClick={() => !isInCart ? addToCartHandler() : router.push('/cart')} className="bg-slate-800 text-white px-10 py-3 text-sm font-medium rounded hover:bg-slate-900 active:scale-95 transition">
+                        {!isInCart ? 'Add to Cart' : 'View Cart'}
                     </button>
                 </div>
                 <hr className="border-gray-300 my-5" />
