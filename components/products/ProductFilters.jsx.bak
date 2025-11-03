@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
 import { Badge } from '@/components/ui/badge'
@@ -12,7 +13,7 @@ import { X, Filter, Star, Save, Check } from 'lucide-react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import toast from 'react-hot-toast'
 
-export default function ProductFiltersEnhanced({ categories, searchParams }) {
+export default function ProductFilters({ categories, searchParams }) {
   const router = useRouter()
   const params = useSearchParams()
   
@@ -23,25 +24,6 @@ export default function ProductFiltersEnhanced({ categories, searchParams }) {
   const [minRating, setMinRating] = useState(Number(params.get('minRating')) || 0)
   const [inStockOnly, setInStockOnly] = useState(params.get('inStock') === 'true')
   const [preferencesSaved, setPreferencesSaved] = useState(false)
-
-  // Load saved preferences on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('filterPreferences')
-    if (saved && !params.toString()) {
-      try {
-        const prefs = JSON.parse(saved)
-        const filtersToApply = {}
-        if (prefs.category) filtersToApply.category = prefs.category
-        if (prefs.sortBy) filtersToApply.sortBy = prefs.sortBy
-        if (Object.keys(filtersToApply).length > 0) {
-          applyFilters(filtersToApply)
-        }
-        if (prefs.minRating) setMinRating(prefs.minRating)
-      } catch (e) {
-        console.error('Error loading preferences:', e)
-      }
-    }
-  }, [])
 
   const applyFilters = (newParams) => {
     const current = new URLSearchParams(params.toString())
@@ -201,7 +183,7 @@ export default function ProductFiltersEnhanced({ categories, searchParams }) {
         {/* Price Range */}
         <AccordionItem value="price" className="border-none">
           <AccordionTrigger className="hover:no-underline py-2">
-            <span className="font-medium text-gray-900 dark:text-white">Price Range (\u20a6)</span>
+            <span className="font-medium text-gray-900 dark:text-white">Price Range (₦)</span>
           </AccordionTrigger>
           <AccordionContent className="pt-4 space-y-4">
             <Slider
@@ -339,7 +321,7 @@ export default function ProductFiltersEnhanced({ categories, searchParams }) {
                 className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 cursor-pointer"
                 onClick={() => applyFilters({ minPrice: '', maxPrice: '' })}
               >
-                \u20a6{params.get('minPrice') || 0} - \u20a6{params.get('maxPrice') || '100k+'}
+                ₦{params.get('minPrice') || 0} - ₦{params.get('maxPrice') || '100k+'}
                 <X className="w-3 h-3 ml-1" />
               </Badge>
             )}

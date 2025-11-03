@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import ProductGrid from '@/components/products/ProductGrid'
 import ProductFilters from '@/components/products/ProductFilters'
 import ProductGridSkeleton from '@/components/products/ProductGridSkeleton'
+import AdvancedSearch from '@/components/products/AdvancedSearch'
 import { Package } from 'lucide-react'
 
 export const metadata = {
@@ -18,6 +19,8 @@ async function getProducts(searchParams) {
   const category = searchParams.category || ''
   const minPrice = searchParams.minPrice ? Number(searchParams.minPrice) : undefined
   const maxPrice = searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined
+  const minRating = searchParams.minRating ? Number(searchParams.minRating) : undefined
+  const inStock = searchParams.inStock === 'true'
   const sortBy = searchParams.sortBy || 'newest'
 
   // Build where clause
@@ -39,6 +42,8 @@ async function getProducts(searchParams) {
           },
         }
       : {}),
+    ...(minRating !== undefined && { averageRating: { gte: minRating } }),
+    ...(inStock && { stockQuantity: { gt: 0 } }),
   }
 
   // Build orderBy clause
@@ -111,13 +116,16 @@ export default async function ProductsPage({ searchParams }) {
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Discover Quality Products
-            </h1>
-            <p className="text-lg md:text-xl text-emerald-50">
-              Shop from verified vendors across Africa
-            </p>
+          <div className="flex flex-col items-center gap-6">
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                Discover Quality Products
+              </h1>
+              <p className="text-lg md:text-xl text-emerald-50">
+                Shop from verified vendors across Africa
+              </p>
+            </div>
+            <AdvancedSearch />
           </div>
         </div>
       </div>
