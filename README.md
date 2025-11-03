@@ -19,10 +19,10 @@ A modern, full-featured e-commerce platform connecting African buyers with verif
 - ✅ **Order Management** - Order detail pages, order tracking, order cancellation, refund requests
 - ✅ **Vendor Dashboard - Products** - Product management with add/edit/delete, inventory tracking, status toggle
 - ✅ **Vendor Dashboard - Orders** - Order management, status updates, revenue tracking, customer details
+- ✅ **Admin Panel - Vendor Approval** - Vendor application review, approval/rejection workflow, notifications
 
 ### In Progress
-- 🔄 Admin Panel
-- 🔄 Admin Panel
+- 🔄 Admin Panel - Analytics
 
 ## 🚀 Tech Stack
 
@@ -89,8 +89,10 @@ See [design-tokens.md](design-tokens.md) for complete guidelines.
 - `/orders/[id]` - Detailed order tracking with progress timeline
 - `/sign-in` & `/sign-up` - Authentication pages
 - `/pending` - Vendor pending approval page
-- `/store` - Vendor dashboard (coming soon)
-- `/admin` - Admin panel (coming soon)
+- `/store` - Vendor dashboard with product and order management
+- `/admin` - Admin panel with vendor management
+- `/admin/approve` - Vendor approval workflow with detailed reviews
+- `/admin/stores` - Complete vendor management and monitoring
 
 ## 🗄️ Database Schema
 
@@ -114,7 +116,7 @@ The seed script creates:
   - **Lagos Tech Gadgets** - Electronics
 ## 🎯 Roadmap
 
-### Phase 1 (Current - 50% Complete)
+### Phase 1 (Current - 55% Complete)
 - [x] UI/UX Design System
 - [x] Database Schema
 - [x] Basic Navigation
@@ -125,6 +127,7 @@ The seed script creates:
 - [x] Order Management System
 - [x] Vendor Product Management
 - [x] Vendor Order Management
+- [x] Admin Vendor Approval System
 
 ### Phase 2
 - [ ] Payment Integration (Paystack)

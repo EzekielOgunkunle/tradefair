@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from "react"
+import { useUser } from "@clerk/nextjs"
 import Loading from "../Loading"
 import Link from "next/link"
 import { ArrowRightIcon } from "lucide-react"
@@ -7,18 +8,42 @@ import AdminNavbar from "./AdminNavbar"
 import AdminSidebar from "./AdminSidebar"
 
 const AdminLayout = ({ children }) => {
-
+    const { user, isLoaded } = useUser()
     const [isAdmin, setIsAdmin] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    const fetchIsAdmin = async () => {
-        setIsAdmin(true)
-        setLoading(false)
-    }
-
     useEffect(() => {
-        fetchIsAdmin()
-    }, [])
+        const checkAdminStatus = async () => {
+            if (!isLoaded) {
+                return
+            }
+
+            if (!user) {
+                setIsAdmin(false)
+                setLoading(false)
+                return
+            }
+
+            try {
+                // Fetch user role from database
+                const response = await fetch('/api/user/role')
+                const data = await response.json()
+
+                if (data.success && data.role === 'ADMIN') {
+                    setIsAdmin(true)
+                } else {
+                    setIsAdmin(false)
+                }
+            } catch (error) {
+                console.error('Error checking admin status:', error)
+                setIsAdmin(false)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        checkAdminStatus()
+    }, [user, isLoaded])
 
     return loading ? (
         <Loading />
