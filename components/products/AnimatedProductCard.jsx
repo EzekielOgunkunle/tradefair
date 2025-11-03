@@ -6,6 +6,8 @@ import { motion } from 'framer-motion'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useDispatch } from 'react-redux'
+import { notifyAddedToCart } from '@/lib/toast-utils'
 
 /**
  * Animated Product Card Component
@@ -20,9 +22,10 @@ import { Button } from '@/components/ui/button'
  * @param {string} product.vendor - Vendor name
  * @param {number} product.rating - Product rating (0-5)
  * @param {boolean} product.featured - Is featured product
- * @param {boolean} product.inStock - Is in stock
- */
 const AnimatedProductCard = ({ product }) => {
+    const [isHovered, setIsHovered] = React.useState(false)
+    const dispatch = useDispatch()
+    const currency = '₦' // Nigerian Naira
     const [isHovered, setIsHovered] = React.useState(false)
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
 
@@ -76,12 +79,25 @@ const AnimatedProductCard = ({ product }) => {
             }
         }
     }
-
     const buttonVariants = {
         initial: { opacity: 0, y: 10 },
         hover: { opacity: 1, y: 0 }
     }
 
+    const handleAddToCart = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        
+        if (!product.inStock) return
+
+        // Dispatch to Redux cart
+        // dispatch(addToCart({ id: product.id, name: product.name, price: product.price, image: product.image }))
+        
+        // Show toast notification
+        notifyAddedToCart(product.name)
+    }
+
+    return (
     return (
         <motion.div
             variants={cardVariants}
@@ -192,20 +208,21 @@ const AnimatedProductCard = ({ product }) => {
                         <span className="text-xs text-slate-600">({product.rating})</span>
                     </div>
                 )}
-
-                {/* Price */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold text-emerald-600">
-                            {currency}{product.price.toFixed(2)}
-                        </span>
-                        {product.originalPrice && (
-                            <span className="text-sm text-slate-500 line-through">
-                                {currency}{product.originalPrice.toFixed(2)}
-                            </span>
-                        )}
-                    </div>
-
+                    {/* Add to Cart Button */}
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <Button
+                            size="icon"
+                            onClick={handleAddToCart}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-emerald-200"
+                            disabled={!product.inStock}
+                            aria-label="Add to cart"
+                        >
+                            <ShoppingCart className="w-4 h-4" />
+                        </Button>
+                    </motion.div>
                     {/* Add to Cart Button */}
                     <motion.div
                         whileHover={{ scale: 1.05 }}
