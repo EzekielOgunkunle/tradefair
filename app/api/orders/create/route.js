@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request) {
@@ -30,16 +30,36 @@ export async function POST(request) {
       )
     }
 
-    // Get user from database
-    const user = await prisma.user.findUnique({
+    // Get user from database or create if doesn't exist
+    let user = await prisma.user.findUnique({
       where: { clerkId: userId }
     })
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      )
+      // Fallback: Create user if not found (webhook might have failed)
+      const clerkUser = await currentUser()
+      
+      if (!clerkUser) {
+        return NextResponse.json(
+          { error: 'User authentication failed' },
+          { status: 401 }
+        )
+      }
+
+      const displayName = clerkUser.firstName && clerkUser.lastName
+        ? `${clerkUser.firstName} ${clerkUser.lastName}`
+        : clerkUser.username || clerkUser.emailAddresses[0]?.emailAddress.split('@')[0] || 'User'
+
+      user = await prisma.user.create({
+        data: {
+          clerkId: userId,
+          email: clerkUser.emailAddresses[0]?.emailAddress || '',
+          displayName,
+          role: 'BUYER',
+        },
+      })
+
+      console.log('User created during order creation:', userId)
     }
 
     // Group items by vendor
