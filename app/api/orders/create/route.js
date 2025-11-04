@@ -126,12 +126,18 @@ export async function POST(request) {
 
     // Create orders for each vendor
     const orders = []
-    const reference = `TF-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+    const baseReference = `TF-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
 
+    let orderIndex = 0
     for (const [vendorId, vendorItems] of Object.entries(itemsByVendor)) {
       const vendorTotal = vendorItems.reduce((sum, item) => 
         sum + (item.listing.priceCents * item.quantity), 0
       )
+
+      // Generate unique reference for each order
+      const orderReference = `${baseReference}-${orderIndex}`
+
+      console.log(`Creating order ${orderIndex + 1} for vendor ${vendorId}, Reference: ${orderReference}`)
 
       // Create order
       const order = await prisma.order.create({
@@ -141,7 +147,7 @@ export async function POST(request) {
           totalAmountCents: vendorTotal,
           currency: 'USD',
           status: 'PENDING',
-          paystackReference: reference,
+          paystackReference: orderReference,
           street: shippingAddress.street,
           city: shippingAddress.city,
           state: shippingAddress.state,
@@ -167,6 +173,7 @@ export async function POST(request) {
       })
 
       orders.push(order)
+      orderIndex++
 
       // Update inventory
       for (const item of vendorItems) {
@@ -174,13 +181,15 @@ export async function POST(request) {
           where: { id: item.id },
           data: {
             inventory: {
-              decrement: item.quantity
-            }
-          }
-        })
-      }
-    }
+    console.log(`✓ Successfully created ${orders.length} order(s)`)
 
+    return NextResponse.json({
+      success: true,
+      orderId: orders[0].id, // Return first order ID for backward compatibility
+      orders: orders.map(o => ({ id: o.id, reference: o.paystackReference })),
+      reference: baseReference, // Base reference for tracking
+      message: `Successfully created ${orders.length} order(s)`
+    })
     return NextResponse.json({
       success: true,
       orderId: orders[0].id, // Return first order ID
