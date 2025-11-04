@@ -21,20 +21,38 @@ export default function ProductInfo({ product }) {
 
   const handleAddToCart = () => {
     if (!inStock) return
-    dispatch(addToCart({
-      id: product.id,
-      name: product.title,
-      price: price,
-      image: product.images?.[0] || '/placeholder.png',
-      vendor: product.vendor?.name || 'Unknown Vendor',
-      maxQuantity: product.inventory
-    }))
+    
+    // Add each item according to quantity
+    for (let i = 0; i < quantity; i++) {
+      dispatch(addToCart({
+        id: product.id,
+        name: product.title,
+        price: price,
+        image: product.images?.[0] || '/placeholder.png',
+        vendor: product.vendor?.name || 'Unknown Vendor',
+        maxQuantity: product.inventory
+      }))
+    }
+    
     notifyAddedToCart(product.title, quantity)
   }
 
   const handleBuyNow = () => {
     if (!inStock) return
-    handleAddToCart()
+    
+    // Add to cart
+    for (let i = 0; i < quantity; i++) {
+      dispatch(addToCart({
+        id: product.id,
+        name: product.title,
+        price: price,
+        image: product.images?.[0] || '/placeholder.png',
+        vendor: product.vendor?.name || 'Unknown Vendor',
+        maxQuantity: product.inventory
+      }))
+    }
+    
+    // Redirect to cart immediately
     router.push('/cart')
   }
 
