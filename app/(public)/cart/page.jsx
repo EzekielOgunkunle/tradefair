@@ -28,13 +28,14 @@ export default function Cart() {
 
   const handleClearCart = () => {
     showWithAction(
-      'Clear your entire cart?',
-      'This will remove all items from your cart.',
-      () => {
-        dispatch(clearCart())
-        showSuccess('Cart cleared successfully')
-      },
-      'Clear Cart'
+      'Are you sure you want to clear your cart?',
+      {
+        label: 'Clear Cart',
+        onClick: () => {
+          dispatch(clearCart())
+          showSuccess('Cart cleared successfully')
+        }
+      }
     )
   }
 
