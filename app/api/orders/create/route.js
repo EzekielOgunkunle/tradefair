@@ -92,9 +92,14 @@ export async function POST(request) {
 
       if (!listing) {
         console.log(`ERROR: Product not found - ID: ${item.id}, Name: ${item.name}`)
+        console.log('SOLUTION: Cart contains invalid product IDs. User needs to clear cart and re-add products.')
         return NextResponse.json(
-          { error: `Product not found: ${item.name || item.id}. Please remove it from your cart and try again.` },
-          { status: 404 }
+          { 
+            error: 'One or more products in your cart are no longer available. Please clear your cart and add products again.',
+            invalidProductId: item.id,
+            productName: item.name
+          },
+          { status: 400 }
         )
       }
 
