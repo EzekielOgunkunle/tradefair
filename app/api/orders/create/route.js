@@ -6,7 +6,11 @@ export async function POST(request) {
   try {
     const { userId } = await auth()
     
+    console.log('=== Order Creation Started ===')
+    console.log('User ID:', userId)
+    
     if (!userId) {
+      console.log('ERROR: No userId from auth')
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -14,9 +18,17 @@ export async function POST(request) {
     }
 
     const { items, shippingAddress, totalAmountCents, subtotalCents, deliveryFeeCents } = await request.json()
+    
+    console.log('Order data received:', {
+      itemCount: items?.length,
+      totalAmountCents,
+      subtotalCents,
+      deliveryFeeCents
+    })
 
     // Validate request
     if (!items || items.length === 0) {
+      console.log('ERROR: Cart is empty')
       return NextResponse.json(
         { error: 'Cart is empty' },
         { status: 400 }
@@ -24,6 +36,7 @@ export async function POST(request) {
     }
 
     if (!shippingAddress || !shippingAddress.street || !shippingAddress.city) {
+      console.log('ERROR: Invalid shipping address')
       return NextResponse.json(
         { error: 'Invalid shipping address' },
         { status: 400 }
@@ -35,11 +48,15 @@ export async function POST(request) {
       where: { clerkId: userId }
     })
 
+    console.log('User lookup result:', user ? `Found: ${user.displayName}` : 'Not found')
+
     if (!user) {
+      console.log('Creating new user from Clerk data...')
       // Fallback: Create user if not found (webhook might have failed)
       const clerkUser = await currentUser()
       
       if (!clerkUser) {
+        console.log('ERROR: Could not fetch Clerk user')
         return NextResponse.json(
           { error: 'User authentication failed' },
           { status: 401 }
@@ -59,12 +76,14 @@ export async function POST(request) {
         },
       })
 
-      console.log('User created during order creation:', userId)
+      console.log('User created:', user.displayName)
     }
 
     // Group items by vendor
+    console.log('Processing cart items...')
     const itemsByVendor = {}
     for (const item of items) {
+      console.log(`Checking product: ${item.id}`)
       // Fetch listing to get vendor
       const listing = await prisma.listing.findUnique({
         where: { id: item.id },
@@ -72,14 +91,18 @@ export async function POST(request) {
       })
 
       if (!listing) {
+        console.log(`ERROR: Product not found - ID: ${item.id}, Name: ${item.name}`)
         return NextResponse.json(
           { error: `Product not found: ${item.name || item.id}. Please remove it from your cart and try again.` },
           { status: 404 }
         )
       }
 
+      console.log(`Product found: ${listing.title}, Inventory: ${listing.inventory}`)
+
       // Check inventory
       if (listing.inventory < item.quantity) {
+        console.log(`ERROR: Insufficient inventory for ${listing.title}`)
         return NextResponse.json(
           { error: `Insufficient inventory for ${listing.title}. Only ${listing.inventory} available.` },
           { status: 400 }
