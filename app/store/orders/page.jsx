@@ -233,7 +233,7 @@ export default function VendorOrdersPage() {
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Revenue</p>
                 <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-                  ₦{(stats.revenue / 100).toLocaleString()}
+                  ${(stats.revenue / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
               <DollarSign className="w-12 h-12 text-emerald-500 opacity-20" />
@@ -331,7 +331,7 @@ export default function VendorOrdersPage() {
                     <div className="text-right">
                       <p className="text-sm text-gray-500 dark:text-gray-400">Total</p>
                       <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                        ₦{(order.totalAmountCents / 100).toLocaleString()}
+                        ${(order.totalAmountCents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                     </div>
                   </div>
@@ -446,10 +446,10 @@ export default function VendorOrdersPage() {
                       <div className="flex-1">
                         <p className="font-medium">{item.title}</p>
                         <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
-                        <p className="text-sm font-medium">₦{(item.priceCents / 100).toLocaleString()}</p>
+                        <p className="text-sm font-medium">${(item.priceCents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">₦{((item.priceCents * item.quantity) / 100).toLocaleString()}</p>
+                        <p className="font-semibold">${((item.priceCents * item.quantity) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                       </div>
                     </div>
                   ))}
@@ -460,7 +460,7 @@ export default function VendorOrdersPage() {
               <div className="border-t pt-4">
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span className="text-emerald-600">₦{(selectedOrder.totalAmountCents / 100).toLocaleString()}</span>
+                  <span className="text-emerald-600">${(selectedOrder.totalAmountCents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               </div>
             </div>

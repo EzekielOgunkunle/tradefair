@@ -5,7 +5,8 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 
 export default function ProductImageGallery({ images, title }) {
   const [selectedImage, setSelectedImage] = useState(0)
@@ -121,6 +122,9 @@ export default function ProductImageGallery({ images, title }) {
       {/* Zoom Modal */}
       <Dialog open={isZoomed} onOpenChange={setIsZoomed}>
         <DialogContent className="max-w-5xl w-full p-0">
+          <VisuallyHidden>
+            <DialogTitle>{title} - Image Gallery</DialogTitle>
+          </VisuallyHidden>
           <div className="relative aspect-square bg-black">
             <Image
               src={images[selectedImage]}

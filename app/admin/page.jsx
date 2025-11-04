@@ -37,7 +37,7 @@ export default function AdminDashboard() {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const currency = '₦';
+  const currency = '$';
 
   const fetchAnalytics = async () => {
     try {

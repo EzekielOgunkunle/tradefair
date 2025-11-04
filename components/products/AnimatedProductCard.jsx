@@ -17,7 +17,7 @@ import { notifyAddedToCart } from '@/lib/toast-utils'
 const AnimatedProductCard = ({ product }) => {
     const [isHovered, setIsHovered] = React.useState(false)
     const dispatch = useDispatch()
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₦'
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
 
     // Calculate discount percentage
     const discount = product.originalPrice 

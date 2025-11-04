@@ -22,7 +22,7 @@ export default function ProfileOverview({ userData }) {
     );
   }
 
-  const currency = '₦';
+  const currency = '$';
 
   const stats = [
     {

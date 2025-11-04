@@ -298,7 +298,7 @@ export default function VendorProductsPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                        ₦{(product.priceCents / 100).toLocaleString()}
+                        ${(product.priceCents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         Stock: {product.inventory}

@@ -21,7 +21,7 @@ export default function OrderHistory() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
-  const currency = '₦';
+  const currency = '$';
 
   const fetchOrders = async () => {
     try {

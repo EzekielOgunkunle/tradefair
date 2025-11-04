@@ -297,7 +297,7 @@ export default function EditProductPage() {
           {/* Price and Inventory */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label htmlFor="price">Price (₦) *</Label>
+              <Label htmlFor="price">Price (USD) *</Label>
               <Input
                 id="price"
                 type="number"
@@ -309,7 +309,7 @@ export default function EditProductPage() {
                 required
               />
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Enter price in Naira (e.g., 15000 for ₦15,000)
+                Enter price in USD (e.g., 149.99 for $149.99)
               </p>
             </div>
 

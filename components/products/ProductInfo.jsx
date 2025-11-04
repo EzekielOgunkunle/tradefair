@@ -90,7 +90,7 @@ export default function ProductInfo({ product }) {
       <div className="border-t border-b border-gray-200 dark:border-gray-700 py-6">
         <div className="flex items-baseline gap-3">
           <span className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">
-            ₦{price.toLocaleString()}
+            ${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
           <span className="text-gray-500 dark:text-gray-400">
             {product.currency}
