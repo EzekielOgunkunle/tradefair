@@ -181,6 +181,13 @@ export async function POST(request) {
           where: { id: item.id },
           data: {
             inventory: {
+              decrement: item.quantity
+            }
+          }
+        })
+      }
+    }
+
     console.log(`✓ Successfully created ${orders.length} order(s)`)
 
     return NextResponse.json({
@@ -189,13 +196,6 @@ export async function POST(request) {
       orders: orders.map(o => ({ id: o.id, reference: o.paystackReference })),
       reference: baseReference, // Base reference for tracking
       message: `Successfully created ${orders.length} order(s)`
-    })
-    return NextResponse.json({
-      success: true,
-      orderId: orders[0].id, // Return first order ID
-      orders: orders.map(o => o.id),
-      reference,
-      message: 'Orders created successfully'
     })
 
   } catch (error) {
