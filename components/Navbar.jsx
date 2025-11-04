@@ -2,7 +2,7 @@
 import { Search, ShoppingCart, Store } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 
@@ -12,7 +12,13 @@ const Navbar = () => {
     const { user } = useUser();
 
     const [search, setSearch] = useState('')
+    const [mounted, setMounted] = useState(false)
     const cartCount = useSelector(state => state.cart.total)
+
+    // Prevent hydration mismatch by only rendering cart count after mount
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     const handleSearch = (e) => {
         e.preventDefault()
@@ -50,7 +56,7 @@ const Navbar = () => {
                         <Link href="/cart" className="relative flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition">
                             <ShoppingCart size={18} />
                             Cart
-                            {cartCount > 0 && (
+                            {mounted && cartCount > 0 && (
                                 <span className="absolute -top-1 left-3 text-[10px] text-white bg-emerald-600 px-1.5 py-0.5 rounded-full font-medium">
                                     {cartCount}
                                 </span>
@@ -103,7 +109,7 @@ const Navbar = () => {
                     <div className="sm:hidden flex items-center gap-3">
                         <Link href="/cart" className="relative">
                             <ShoppingCart size={20} className="text-slate-600 dark:text-slate-300" />
-                            {cartCount > 0 && (
+                            {mounted && cartCount > 0 && (
                                 <span className="absolute -top-2 -right-2 text-[10px] text-white bg-emerald-600 px-1.5 py-0.5 rounded-full font-medium">
                                     {cartCount}
                                 </span>

@@ -51,7 +51,7 @@ export default function CheckoutPage() {
     }
   }, [isLoaded, user])
 
-  const deliveryFee = subtotal >= 10000 ? 0 : 1500
+  const deliveryFee = subtotal >= 100 ? 0 : 15 // Free delivery over $100
   const total = subtotal + deliveryFee
 
   const handleInputChange = (e) => {
@@ -346,11 +346,11 @@ export default function CheckoutPage() {
                         {item.name}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Qty: {item.quantity} × ₦{item.price.toLocaleString()}
+                        Qty: {item.quantity} × ${item.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                     </div>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      ₦{(item.price * item.quantity).toLocaleString()}
+                      ${(item.price * item.quantity).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </div>
                 ))}
@@ -360,7 +360,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Subtotal</span>
                   <span className="font-medium text-gray-900 dark:text-white">
-                    ₦{subtotal.toLocaleString()}
+                    ${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
@@ -369,7 +369,7 @@ export default function CheckoutPage() {
                     {deliveryFee === 0 ? (
                       <span className="text-emerald-600 dark:text-emerald-400">FREE</span>
                     ) : (
-                      `₦${deliveryFee.toLocaleString()}`
+                      `$${deliveryFee.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                     )}
                   </span>
                 </div>
@@ -377,7 +377,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-lg font-bold text-gray-900 dark:text-white">
                     <span>Total</span>
                     <span className="text-emerald-600 dark:text-emerald-400">
-                      ₦{total.toLocaleString()}
+                      ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                 </div>
@@ -396,7 +396,7 @@ export default function CheckoutPage() {
                 ) : (
                   <>
                     <Lock className="w-5 h-5 mr-2" />
-                    Pay ₦{total.toLocaleString()}
+                    Pay ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </>
                 )}
               </Button>
