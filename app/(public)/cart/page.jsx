@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { deleteItemFromCart, updateQuantity, clearCart } from '@/lib/features/cart/cartSlice'
 import { notifyItemRemoved, showSuccess, showWithAction } from '@/lib/toast-utils'
 import { useRouter } from 'next/navigation'
+import { formatCurrency } from '@/lib/utils'
 
 export default function Cart() {
   const dispatch = useDispatch()
@@ -43,8 +44,8 @@ export default function Cart() {
     router.push('/checkout')
   }
 
-  // Calculate delivery estimate (free delivery above ₦10,000)
-  const deliveryFee = subtotal >= 10000 ? 0 : 1500
+  // Calculate delivery estimate (free delivery above $100)
+  const deliveryFee = subtotal >= 100 ? 0 : 15
   const total_with_delivery = subtotal + deliveryFee
 
   if (items.length === 0) {
@@ -193,10 +194,10 @@ export default function Cart() {
                         {/* Price */}
                         <div className="text-right">
                           <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                            ₦{(item.price * item.quantity).toLocaleString()}
+                            {formatCurrency(item.price * item.quantity)}
                           </p>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            ₦{item.price.toLocaleString()} each
+                            {formatCurrency(item.price)} each
                           </p>
                         </div>
                       </div>
@@ -218,7 +219,7 @@ export default function Cart() {
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
                   <span>Subtotal ({total} items)</span>
                   <span className="font-medium text-gray-900 dark:text-white">
-                    ₦{subtotal.toLocaleString()}
+                    {formatCurrency(subtotal)}
                   </span>
                 </div>
                 <div className="flex justify-between text-gray-600 dark:text-gray-400">
@@ -227,7 +228,7 @@ export default function Cart() {
                     {deliveryFee === 0 ? (
                       <span className="text-emerald-600 dark:text-emerald-400">FREE</span>
                     ) : (
-                      `₦${deliveryFee.toLocaleString()}`
+                      formatCurrency(deliveryFee)
                     )}
                   </span>
                 </div>
@@ -236,7 +237,7 @@ export default function Cart() {
                   <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
                     <Package className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-amber-700 dark:text-amber-300">
-                      Add ₦{(10000 - subtotal).toLocaleString()} more for free delivery
+                      Add {formatCurrency(100 - subtotal)} more for free delivery
                     </p>
                   </div>
                 )}
@@ -245,7 +246,7 @@ export default function Cart() {
                   <div className="flex justify-between text-lg font-bold text-gray-900 dark:text-white">
                     <span>Total</span>
                     <span className="text-emerald-600 dark:text-emerald-400">
-                      ₦{total_with_delivery.toLocaleString()}
+                      {formatCurrency(total_with_delivery)}
                     </span>
                   </div>
                 </div>

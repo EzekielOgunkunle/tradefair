@@ -92,6 +92,16 @@ const Navbar = () => {
                                     </Link>
                                 )}
                                 
+                                {user?.publicMetadata?.role !== 'VENDOR' && user?.publicMetadata?.role !== 'ADMIN' && (
+                                    <Link 
+                                        href="/apply-vendor" 
+                                        className="flex items-center gap-2 px-4 py-2 border border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition font-medium"
+                                    >
+                                        <Store size={16} />
+                                        Become a Vendor
+                                    </Link>
+                                )}
+                                
                                 <UserButton 
                                     afterSignOutUrl="/"
                                     appearance={{
