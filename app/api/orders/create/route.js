@@ -73,7 +73,7 @@ export async function POST(request) {
 
       if (!listing) {
         return NextResponse.json(
-          { error: `Product not found: ${item.id}` },
+          { error: `Product not found: ${item.name || item.id}. Please remove it from your cart and try again.` },
           { status: 404 }
         )
       }
@@ -81,7 +81,7 @@ export async function POST(request) {
       // Check inventory
       if (listing.inventory < item.quantity) {
         return NextResponse.json(
-          { error: `Insufficient inventory for ${listing.title}` },
+          { error: `Insufficient inventory for ${listing.title}. Only ${listing.inventory} available.` },
           { status: 400 }
         )
       }
