@@ -98,14 +98,15 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items,
           shippingAddress: formData,
-          totalAmountCents: total * 100,
-          subtotalCents: subtotal * 100,
-          deliveryFeeCents: deliveryFee * 100
+          totalAmountCents: Math.round(total * 100), // Convert dollars to cents
+          subtotalCents: Math.round(subtotal * 100),
+          deliveryFeeCents: Math.round(deliveryFee * 100)
         })
       })
 
       if (!orderResponse.ok) {
-        throw new Error('Failed to create order')
+        const errorData = await orderResponse.json()
+        throw new Error(errorData.error || 'Failed to create order')
       }
 
       const { orderId, reference } = await orderResponse.json()

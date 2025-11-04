@@ -91,7 +91,7 @@ export async function POST(request) {
           buyerId: user.id,
           vendorId,
           totalAmountCents: vendorTotal,
-          currency: 'NGN',
+          currency: 'USD',
           status: 'PENDING',
           paystackReference: reference,
           street: shippingAddress.street,
