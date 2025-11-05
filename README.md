@@ -2,6 +2,9 @@
 
 A modern, full-featured e-commerce platform connecting African buyers with verified vendors. Built with Next.js 15, Prisma, and a beautiful custom UI.
 
+> **📊 Project Status**: Phase 1 - 85% Complete (17/20 tasks)  
+> **📄 Detailed Status Report**: See [PROJECT_STATUS.md](PROJECT_STATUS.md) for comprehensive project overview
+
 ## 🌟 Features
 
 ### Current Implementation
