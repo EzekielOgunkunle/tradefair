@@ -217,21 +217,21 @@ TradeFair is a modern, full-featured e-commerce platform built for the African m
 17. ✅ AI Search & Recommendations
 
 #### Remaining Tasks 🔄
-18. ⏳ **AWS S3 Integration** (0% complete)
+18. ⏳ **AWS S3 Integration** (0% complete) - **Estimated: 4-6 hours**
     - Set up S3 bucket configuration
     - Create upload API endpoints
     - Implement image upload component
     - Add file validation
     - Test CDN delivery
 
-19. ⏳ **Mobile Optimization** (0% complete)
+19. ⏳ **Mobile Optimization** (0% complete) - **Estimated: 6-8 hours**
     - Audit mobile responsiveness
     - Fix layout issues on small screens
     - Optimize touch interactions
     - Test on real devices
     - Performance optimization for mobile networks
 
-20. ⏳ **Testing & Error Handling** (0% complete)
+20. ⏳ **Testing & Error Handling** (0% complete) - **Estimated: 8-10 hours**
     - Add error boundaries (`error.tsx`)
     - Add loading states (`loading.tsx`)
     - Create 404 page (`not-found.tsx`)
@@ -553,7 +553,7 @@ tradefair/
 
 ### Contact
 - **Author**: Ezekiel Ogunkunle
-- **GitHub**: [@EzekielOgunkunle](https://github.com/EzekielOgunkunle)
+- **GitHub**: [@EzekielOgunkunle](https://github.com/ezekielogunkunle)
 - **Email**: ezekiel.ogunkunle@yahoo.com
 
 ---
